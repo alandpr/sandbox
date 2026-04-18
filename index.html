@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Coffee Master v8.6 - Flow</title>
+    <title>Coffee Master v8.7 - Final Fix</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
@@ -15,6 +15,8 @@
         .label-gold { color: #f59e0b; font-size: 9px; font-weight: 900; text-transform: uppercase; margin-top: 20px; margin-bottom: 4px; margin-left: 6px; letter-spacing: 1px; display: block; }
         .label-gold:first-child { margin-top: 0; }
         input, select, textarea { background: #222; border: 2px solid #333; color: #fff; padding: 12px; border-radius: 12px; width: 100%; margin-bottom: 4px; font-size: 16px; font-weight: 900; font-style: italic; -webkit-appearance: none; }
+        .placeholder-style { color: #555 !important; }
+        ::placeholder { color: #555; }
         .btn-gold { background: #f59e0b; color: #000; font-weight: 900; padding: 18px; border-radius: 18px; width: 100%; text-transform: uppercase; font-size: 14px; margin-top: 15px; cursor: pointer; }
         .tab-btn { background: #111; color: #444; flex: 1; padding: 14px 5px; border-radius: 14px; font-size: 10px; font-weight: 900; margin: 3px; border: 1px solid #222; }
         .active-tab { background: #f59e0b; color: #000; border-color: #fbbf24; }
@@ -25,12 +27,14 @@
         .star { font-size: 28px; cursor: pointer; color: #333; }
         .star.active { color: #f59e0b; }
         .search-input { background: #000; border: 1px solid #333; font-size: 11px; padding: 10px; margin-bottom: 15px; border-radius: 10px; text-transform: uppercase; }
+        input[type=range] { -webkit-appearance: none; background: #333; height: 6px; border-radius: 5px; margin: 10px 0; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 18px; width: 18px; border-radius: 50%; background: #f59e0b; }
     </style>
 </head>
 <body class="p-3 max-w-lg mx-auto">
 
     <div id="modal-detalhes" class="hidden" onclick="fecharDetalhes()">
-        <div class="card w-full max-w-sm mx-auto border-amber-500" onclick="event.stopPropagation()">
+        <div class="card w-full max-w-sm mx-auto border-amber-500 shadow-[0_0_50px_rgba(245,158,11,0.1)]" onclick="event.stopPropagation()">
             <h3 class="text-amber-500 font-black italic uppercase text-xl mb-4">Ficha Técnica</h3>
             <div id="detalhes-content" class="space-y-3"></div>
             <button class="btn-gold w-full mt-6" onclick="fecharDetalhes()">VOLTAR</button>
@@ -41,26 +45,26 @@
         <div class="card w-full max-w-sm mx-auto border-amber-600">
             <h1 class="text-3xl font-black text-amber-500 italic uppercase text-center mb-8">COFFEE MASTER</h1>
             <div id="login-form">
-                <span class="label-gold mt-0">E-mail</span><input type="email" id="login-email">
-                <span class="label-gold">Senha</span><input type="password" id="login-pass">
+                <span class="label-gold mt-0">E-mail</span><input type="email" id="login-email" placeholder="SEU@EMAIL.COM">
+                <span class="label-gold">Senha</span><input type="password" id="login-pass" placeholder="******">
                 <button class="btn-gold w-full mt-6" onclick="handleLogin()">Entrar</button>
                 <p class="text-[10px] text-center mt-6 font-black uppercase text-zinc-500">Novo? <button class="text-amber-500 underline" onclick="toggleAuth(false)">Criar agora</button></p>
             </div>
             <div id="signup-form" class="hidden">
-                <span class="label-gold mt-0">Nickname</span><input type="text" id="sign-nick" placeholder="@NICKNAME">
+                <span class="label-gold mt-0">Nickname</span><input type="text" id="sign-nick" placeholder="@ALAN">
                 <span class="label-gold">E-mail</span><input type="email" id="sign-email">
-                <span class="label-gold">Senha</span><input type="password" id="sign-pass">
+                <span class="label-gold">Senha</span><input type="password" id="sign-pass" placeholder="MIN. 6 DIGITOS">
                 <span class="label-gold">Tipo de Perfil</span>
                 <select id="sign-type" onchange="updateProfileInfo(this)"><option value="" disabled selected>SELECIONAR</option><option value="pessoal">PESSOAL (PRIVADO)</option><option value="comunidade">COMUNIDADE (PÚBLICO)</option></select>
                 <div id="profile-info" class="text-[9px] font-bold text-amber-600 uppercase mt-2 italic px-2"></div>
-                <button class="btn-gold w-full mt-6" onclick="handleSignup()">Criar Conta e Aceitar</button>
+                <button class="btn-gold w-full mt-6" onclick="handleSignup()">Criar Conta</button>
                 <button class="text-[10px] w-full text-center mt-6 font-black uppercase text-zinc-500 underline" onclick="toggleAuth(true)">Já tenho conta</button>
             </div>
         </div>
     </div>
 
     <div id="main-app" class="hidden">
-        <div class="flex justify-between items-center mb-5">
+        <div class="flex justify-between items-center mb-5 sticky top-0 bg-black z-50 py-2">
             <div><h1 class="text-2xl font-black text-amber-500 italic uppercase leading-none">COFFEE MASTER</h1><span id="user-display" class="text-[8px] font-black text-zinc-600 uppercase italic"></span></div>
             <div class="flex gap-2">
                 <button onclick="openPix()" class="bg-zinc-900 text-[9px] font-black p-2 rounded-lg border border-amber-600 text-amber-500 italic">PAGAR CAFÉ ☕</button>
@@ -68,7 +72,7 @@
             </div>
         </div>
         
-        <div class="flex mb-6 bg-black p-1 rounded-2xl sticky top-2 z-50 border border-zinc-800 shadow-2xl">
+        <div class="flex mb-6 bg-black p-1 rounded-2xl sticky top-[55px] z-50 border border-zinc-800 shadow-2xl">
             <button id="btn-cafes" class="tab-btn active-tab" onclick="showTab('cafes')">GRÃOS</button>
             <button id="btn-receitas" class="tab-btn" onclick="showTab('receitas')">RECEITAS</button>
             <button id="btn-preparo" class="tab-btn" onclick="showTab('preparo')">PREPARAR</button>
@@ -77,8 +81,8 @@
 
         <div id="tab-cafes">
             <div class="card p-4">
-                <span class="label-gold mt-0">Produtor</span><input type="text" id="g-prod">
-                <span class="label-gold">Identificação do Grão</span><input type="text" id="g-nome">
+                <span class="label-gold mt-0">Produtor</span><input type="text" id="g-prod" placeholder="NOME DO PRODUTOR">
+                <span class="label-gold">Identificação do Grão</span><input type="text" id="g-nome" placeholder="EX: FAZENDA SANTA CLARA">
                 <span class="label-gold">Variedade</span><input type="text" id="g-variedade">
                 <span class="label-gold">Processo</span><input type="text" id="g-processo">
                 <span class="label-gold">Altitude</span><input type="text" id="g-altitude">
@@ -87,9 +91,10 @@
                     <div class="flex-1"><span class="label-gold">DATA</span><input type="date" id="g-data"></div>
                 </div>
                 <span class="label-gold">Notas Sensoriais</span><textarea id="g-notas" rows="2"></textarea>
-                <div id="g-edit-actions" class="hidden flex gap-2 mt-4"><button class="btn-gold flex-1 mt-0" onclick="saveG()">Atualizar</button><button class="bg-zinc-800 text-zinc-400 font-black py-4 px-4 rounded-xl flex-[0.3] text-xs uppercase" onclick="cancelEdit('g')">Canc.</button></div>
+                <div id="g-edit-actions" class="hidden flex gap-2 mt-4"><button class="btn-gold flex-1 mt-0" onclick="saveG()">Atualizar Grão</button><button class="bg-zinc-800 text-zinc-400 font-black py-4 px-4 rounded-xl flex-[0.3] text-xs uppercase" onclick="cancelEdit('g')">X</button></div>
                 <button class="btn-gold w-full" onclick="saveG()" id="g-btn-main">Salvar no Estoque</button>
             </div>
+            <input type="text" id="search-g" class="search-input w-full" placeholder="🔍 BUSCAR GRÃO OU PRODUTOR..." oninput="filterList('g')">
             <div id="list-g" class="space-y-3"></div>
         </div>
 
@@ -102,9 +107,9 @@
                 
                 <div class="bg-zinc-900 p-3 rounded-xl border border-dashed border-zinc-700 mt-4">
                     <div class="grid grid-cols-3 gap-2">
-                        <div><span class="label-gold mt-0">Ratio</span><input type="number" id="r-ratio-base"></div>
-                        <div><span class="label-gold mt-0">Pó Base</span><input type="number" id="r-po-base"></div>
-                        <div><span class="label-gold mt-0">Total</span><input type="number" id="r-total-base" readonly class="text-amber-500 font-bold bg-transparent border-none"></div>
+                        <div><span class="label-gold mt-0">Ratio</span><input type="number" id="r-ratio-base" placeholder="15"></div>
+                        <div><span class="label-gold mt-0">Pó (g)</span><input type="number" id="r-po-base" placeholder="15"></div>
+                        <div><span class="label-gold mt-0">Total (ml)</span><input type="number" id="r-total-base" readonly class="text-amber-500 font-bold bg-transparent border-none"></div>
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-2 mt-4">
@@ -112,10 +117,11 @@
                     <div><span class="label-gold">Tempo (s)</span><input type="number" id="r-bloom-sec"></div>
                 </div>
                 <div id="ataques-container" class="mt-2 space-y-1"></div>
-                <button onclick="addAtackField()" class="text-[9px] font-black text-amber-500 mt-2 p-3 border border-dashed border-amber-900 w-full rounded-lg uppercase">+ ADICIONAR ATAQUE</button>
-                <div id="r-edit-actions" class="hidden flex gap-2 mt-5"><button class="btn-gold flex-1 mt-0" onclick="saveR()">Atualizar</button><button class="bg-zinc-800 text-zinc-400 font-black py-4 px-4 rounded-xl flex-[0.3] text-xs uppercase" onclick="cancelEdit('r')">Canc.</button></div>
+                <button onclick="addAtackField()" class="text-[9px] font-black text-amber-500 mt-2 p-3 border border-dashed border-amber-900 w-full rounded-lg uppercase bg-black shadow-inner">+ ADICIONAR ATAQUE</button>
+                <div id="r-edit-actions" class="hidden flex gap-2 mt-5"><button class="btn-gold flex-1 mt-0" onclick="saveR()">Atualizar Receita</button><button class="bg-zinc-800 text-zinc-400 font-black py-4 px-4 rounded-xl flex-[0.3] text-xs uppercase" onclick="cancelEdit('r')">X</button></div>
                 <button class="btn-gold w-full mt-5" onclick="saveR()" id="r-btn-main">Salvar Receita</button>
             </div>
+            <input type="text" id="search-r" class="search-input w-full" placeholder="🔍 BUSCAR RECEITA..." oninput="filterList('r')">
             <div id="list-r" class="space-y-3"></div>
         </div>
 
@@ -126,7 +132,7 @@
                     <div><span class="label-gold mt-0">Pó (g)</span><input type="text" id="p-po-val" value="--" onfocus="handleFocus(this)" oninput="upCalc()" class="text-center text-xl text-amber-500 font-black bg-transparent border-none"></div>
                     <div><span class="label-gold mt-0">Ratio</span><input type="text" id="p-ratio-val" value="--" onfocus="handleFocus(this)" oninput="upCalc()" class="text-center text-xl text-white font-black bg-transparent border-none"></div>
                 </div>
-                <div class="bg-zinc-900 rounded-2xl py-4 px-5 mt-6 border border-zinc-800 flex justify-between items-center">
+                <div class="bg-zinc-900 rounded-2xl py-4 px-5 mt-6 border border-zinc-800 flex justify-between items-center shadow-inner">
                     <span class="text-[10px] font-black text-zinc-500 uppercase italic">Água Total</span>
                     <div class="text-4xl font-black text-white italic"><span id="p-total">0</span>ml</div>
                 </div>
@@ -140,16 +146,44 @@
         <div id="tab-diario" class="hidden"><div id="list-logs" class="space-y-3"></div></div>
     </div>
 
+    <div id="modal-feedback" class="hidden">
+        <div class="card w-full max-w-sm mx-auto shadow-2xl">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-amber-500 font-black italic uppercase text-xl">Novo Diário</h3>
+                <button onclick="fecharFeedback()" class="text-zinc-600 font-black text-xl">X</button>
+            </div>
+            
+            <div class="flex justify-center gap-1 mb-6" id="star-rating">
+                <span class="star" data-v="1">★</span><span class="star" data-v="2">★</span><span class="star" data-v="3">★</span><span class="star" data-v="4">★</span><span class="star" data-v="5">★</span>
+            </div>
+            
+            <span class="label-gold mt-0">Observações</span>
+            <textarea id="f-obs" placeholder="EX: FICOU DOCE, CORPO MÉDIO..." rows="3"></textarea>
+            
+            <div class="mt-4 space-y-3">
+                <div><div class="flex justify-between text-[10px] font-black uppercase text-zinc-500"><span>Doçura</span><span id="v-doce">3</span></div><input type="range" id="f-doce" min="1" max="5" value="3" oninput="document.getElementById('v-doce').innerText=this.value" class="w-full"></div>
+                <div><div class="flex justify-between text-[10px] font-black uppercase text-zinc-500"><span>Acidez</span><span id="v-acidez">3</span></div><input type="range" id="f-acidez" min="1" max="5" value="3" oninput="document.getElementById('v-acidez').innerText=this.value" class="w-full"></div>
+                <div><div class="flex justify-between text-[10px] font-black uppercase text-zinc-500"><span>Amargor</span><span id="v-amargor">3</span></div><input type="range" id="f-amargor" min="1" max="5" value="3" oninput="document.getElementById('v-amargor').innerText=this.value" class="w-full"></div>
+                <div><div class="flex justify-between text-[10px] font-black uppercase text-zinc-500"><span>Corpo</span><span id="v-corpo">3</span></div><input type="range" id="f-corpo" min="1" max="5" value="3" oninput="document.getElementById('v-corpo').innerText=this.value" class="w-full"></div>
+            </div>
+            
+            <button class="btn-gold w-full mt-8" onclick="salvarFeedback()">SALVAR NO DIÁRIO</button>
+        </div>
+    </div>
+
+    <div id="pix-modal" class="hidden" onclick="closePix()"><div class="card text-center w-full max-w-sm mx-auto" onclick="event.stopPropagation()"><h3 class="text-amber-500 font-black italic uppercase">Apoie o Projeto ☕</h3><div id="pix-qrcode" class="mb-5 inline-block mx-auto"></div><button onclick="copyPix()" class="btn-gold w-full mt-1">Copiar Pix</button></div></div>
+
     <script>
         const config = { apiKey: "AIzaSyCbIsrGjuu6KN-A0xpZUC6ID9aOHBEIJSE", authDomain: "coffee-master-e1f5c.firebaseapp.com", projectId: "coffee-master-e1f5c", storageBucket: "coffee-master-e1f5c.firebasestorage.app", messagingSenderId: "171441357303", appId: "1:171441357303:web:c85dc841ee73f6f29e2ef2" };
         firebase.initializeApp(config); const db = firebase.firestore(); const auth = firebase.auth();
-        let currentUser = null, userProfile = null, timer = null, seg = 0, editIds = { g: null, r: null }, localData = { g: [], r: [] }, activeStepsData = { steps: [], times: [] };
+        let currentUser = null, userProfile = null, timer = null, seg = 0, editIds = { g: null, r: null }, localData = { g: [], r: [], logs: [] }, activeStepsData = { steps: [], times: [] }, notaSelecionada = 0;
 
         auth.onAuthStateChanged(async (user) => {
             if (user) {
                 currentUser = user;
                 const p = await db.collection('users').doc(user.uid).get();
                 userProfile = p.data();
+                if(!userProfile){ auth.signOut(); alert("Erro no perfil. Faça login novamente."); return; }
                 document.getElementById('auth-screen').classList.add('hidden');
                 document.getElementById('main-app').classList.remove('hidden');
                 document.getElementById('user-display').innerText = `@${userProfile.nick} (${userProfile.type})`;
@@ -171,21 +205,43 @@
 
         function showTab(t){ 
             // RESET DE CAMPOS AO MUDAR DE ABA
+            document.querySelectorAll('input:not(.search-input), select, textarea').forEach(el => el.value = el.defaultValue || '');
+            
             if(t !== 'preparo') {
+                clearInterval(timer); timer = null; seg = 0;
+                document.getElementById('timer').innerText = "00:00";
+                document.getElementById('btn-timer-main').innerText = "INICIAR";
                 document.getElementById('p-po-val').value = '--';
                 document.getElementById('p-ratio-val').value = '--';
                 document.getElementById('p-total').innerText = '0';
                 document.getElementById('p-steps').innerHTML = '';
-                clearInterval(timer); timer = null; seg = 0;
-                document.getElementById('timer').innerText = "00:00";
-                document.getElementById('btn-timer-main').innerText = "INICIAR";
             }
+            if(t === 'receitas') resetR();
+            if(t === 'cafes') resetG();
             
             ['cafes','receitas','preparo','diario'].forEach(i=>{ 
                 document.getElementById('tab-'+i).classList.toggle('hidden', i!==t); 
                 document.getElementById('btn-'+i).classList.toggle('active-tab', i===t); 
             }); 
-            if(t==='cafes') loadG(); if(t==='receitas') loadR(); if(t==='preparo') loadPrep(); 
+            if(t==='cafes') loadG(); if(t==='receitas') loadR(); if(t==='preparo') loadPrep(); if(t==='diario') loadDiario();
+        }
+
+        async function loadR() {
+            let snap;
+            // Admin ou Comunidade vê público. Pessoal vê privado.
+            if(userProfile.type === 'comunidade' || userProfile.role === 'admin') snap = await db.collection('receitas').where('visibilidade', '==', 'publico').get();
+            else snap = await db.collection('receitas').where('owner_uid', '==', currentUser.uid).get();
+            localData.r = snap.docs.map(d => ({id: d.id, ...d.data()}));
+            // Garante que o usuário veja suas próprias mesmo se forem privadas no modo comunidade
+            const own = await db.collection('receitas').where('owner_uid', '==', currentUser.uid).get();
+            own.forEach(d => { if(!localData.r.find(x => x.id === d.id)) localData.r.push({id: d.id, ...d.data()}); });
+            
+            let h = '';
+            localData.r.forEach(i => {
+                const isMine = i.owner_uid === currentUser.uid || !i.owner_uid || userProfile.role === 'admin';
+                h += `<div class="card p-3 flex justify-between items-center"><div class="flex-1"><div class="text-lg font-black italic uppercase text-amber-500">${i.nome}</div><div class="text-[8px] text-zinc-600 font-black uppercase">por @${i.owner_nick || 'Admin'} | ${i.metodo}</div></div><div class="flex gap-2"> ${isMine ? `<button onclick='editR("${i.id}", ${JSON.stringify(i).replace(/'/g, "&apos;")})' class="p-2 bg-zinc-900 rounded-lg">✏️</button><button onclick='del("receitas","${i.id}","${i.nome}")' class="p-2 bg-zinc-900 rounded-lg">🗑️</button>` : ''} <button onclick="showTab('preparo'); handleRecipeSelect('${i.id}')" class="text-xs font-black p-2 bg-amber-600 text-black rounded-lg italic uppercase">Preparar</button> </div></div>`;
+            });
+            document.getElementById('list-r').innerHTML = h;
         }
 
         async function saveR() {
@@ -211,6 +267,40 @@
             cancelEdit('r'); loadR();
         }
 
+        function editR(id, i) { 
+            editIds.r = id; 
+            document.getElementById('r-nome').value = i.nome; 
+            document.getElementById('r-metodo').value = i.metodo; 
+            // Se o método não estiver na lista padrão, assume OUTROS
+            if(!['V60','AEROPRESS','KOAR'].includes(i.metodo)){
+                document.getElementById('r-metodo').value = 'OUTROS';
+                document.getElementById('r-metodo-outro').value = i.metodo;
+                document.getElementById('r-metodo-outro-div').classList.remove('hidden');
+            }
+            document.getElementById('r-ratio-base').value = i.origRatio; 
+            document.getElementById('r-po-base').value = i.origPo; 
+            document.getElementById('r-total-base').value = i.origTotal;
+            document.getElementById('r-bloom-ml').value = i.bloomMl; 
+            document.getElementById('r-bloom-sec').value = i.bloomSec; 
+            document.getElementById('ataques-container').innerHTML = ''; 
+            i.ataques?.forEach(a => addAtackField(a.ml, a.sec)); 
+            document.getElementById('r-edit-actions').classList.remove('hidden'); 
+            document.getElementById('r-btn-main').classList.add('hidden'); 
+            // AUTO SCROLL PARA CIMA AO EDITAR
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // BOTAO ADICIONAR VOLTOU AO PADRÃO E TEM 'X'
+        function addAtackField(ml='', sec='') { 
+            document.getElementById('ataques-container').insertAdjacentHTML('beforeend', `
+            <div class="flex gap-2 atk-row items-center bg-zinc-900 p-2 rounded-lg">
+                <input type="number" class="flex-1 atk-ml" placeholder="ML" value="${ml}">
+                <input type="number" class="flex-1 atk-sec" placeholder="SEC" value="${sec}">
+                <button onclick="this.closest('.atk-row').remove()" class="text-zinc-600 font-bold px-2 py-3">X</button>
+            </div>`); 
+        }
+
+        // --- PREPARO INTELIGENTE COM SCROLL ---
         function upCalc() {
             const r = parseFloat(document.getElementById('p-ratio-val').value) || 0;
             const p = parseFloat(document.getElementById('p-po-val').value) || 0;
@@ -228,22 +318,31 @@
 
             activeStepsData = { steps: [], times: [] };
             const bN = Math.round(total * (bM / oT));
-            activeStepsData.steps.push({ type: 'BLOOM', ml: bN, sec: bS, cum: bN });
-            activeStepsData.times.push(bS);
+            if(bN > 0) {
+                activeStepsData.steps.push({ type: 'BLOOM', ml: bN, sec: bS, cum: bN });
+                activeStepsData.times.push(bS);
+            }
 
             let c = bN;
             atksOrig.forEach((a, idx) => {
                 const aN = Math.round(total * (a.ml / oT));
-                c += aN;
-                activeStepsData.steps.push({ type: `ATK ${idx+1}`, ml: aN, sec: a.sec, cum: c });
-                activeStepsData.times.push(activeStepsData.times[activeStepsData.times.length-1] + a.sec);
+                if(aN > 0){
+                    c += aN;
+                    activeStepsData.steps.push({ type: `ATK ${idx+1}`, ml: aN, sec: a.sec, cum: c });
+                    activeStepsData.times.push((activeStepsData.times.length > 0 ? activeStepsData.times[activeStepsData.times.length-1] : 0) + a.sec);
+                }
             });
             renderSteps(0);
         }
 
         function renderSteps(segA) {
             let h = '', tIdx = 0;
-            activeStepsData.times.forEach((t, i) => { if(segA >= t) tIdx = i + 1; });
+            // Se o tempo passou da última etapa, marca como finalizado
+            if(activeStepsData.times.length > 0 && segA >= activeStepsData.times[activeStepsData.times.length-1]) {
+                tIdx = activeStepsData.steps.length;
+            } else {
+                activeStepsData.times.forEach((t, i) => { if(segA >= t) tIdx = i + 1; });
+            }
             
             activeStepsData.steps.forEach((s, idx) => {
                 const act = idx === tIdx;
@@ -265,6 +364,7 @@
             if(timer) { 
                 clearInterval(timer); timer = null; 
                 document.getElementById('btn-timer-main').innerText="CONTINUAR"; 
+                document.getElementById('btn-timer-main').classList.replace('bg-green-700', 'bg-zinc-700');
             } else { 
                 timer = setInterval(() => { 
                     seg++; 
@@ -272,47 +372,114 @@
                     renderSteps(seg); 
                 }, 1000); 
                 document.getElementById('btn-timer-main').innerText="PAUSAR"; 
+                document.getElementById('btn-timer-main').classList.replace('bg-zinc-700', 'bg-green-700');
             } 
         }
 
-        // --- FICHA TÉCNICA E OUTROS ---
+        // --- DIÁRIO / FEEDBACK ---
+        document.querySelectorAll('.star').forEach(s => s.onclick = () => { 
+            notaSelecionada = parseInt(s.dataset.v); 
+            document.querySelectorAll('.star').forEach(st => st.classList.toggle('active', parseInt(st.dataset.v) <= notaSelecionada)); 
+        });
+
+        function abrirFeedback() { 
+            // Para o tempo
+            if(timer){ clearInterval(timer); timer = null; document.getElementById('btn-timer-main').innerText="CONTINUAR"; document.getElementById('btn-timer-main').classList.replace('bg-green-700', 'bg-zinc-700'); }
+            // Abre o diário
+            document.getElementById('modal-feedback').classList.remove('hidden'); 
+        }
+        function fecharFeedback() { 
+            if(confirm("Deseja resetar o preparo?")){
+                document.getElementById('modal-feedback').classList.add('hidden'); 
+                seg=0; document.getElementById('timer').innerText="00:00"; 
+                document.getElementById('btn-timer-main').innerText="INICIAR";
+                document.getElementById('btn-timer-main').classList.replace('bg-zinc-700', 'bg-green-700');
+                upCalc(); // Reseta os quadrados
+            } else {
+                document.getElementById('modal-feedback').classList.add('hidden');
+            }
+        }
+
+        async function salvarFeedback() { 
+            const grainSelect = document.getElementById('p-g');
+            const recipeSelect = document.getElementById('p-r');
+            if(grainSelect.value == "0" || recipeSelect.value == "0") return alert("Selecione Grão e Receita!");
+
+            await db.collection('logs').add({ 
+                grao: grainSelect.options[grainSelect.selectedIndex].text, 
+                receita: recipeSelect.options[recipeSelect.selectedIndex].text,
+                tempoTotal: document.getElementById('timer').innerText, 
+                nota: notaSelecionada,
+                observacoes: document.getElementById('f-obs').value.toUpperCase(),
+                docura: document.getElementById('f-doce').value,
+                acidez: document.getElementById('f-acidez').value,
+                amargor: document.getElementById('f-amargor').value,
+                corpo: document.getElementById('f-corpo').value,
+                data: new Date().toLocaleString(), 
+                ts: firebase.firestore.FieldValue.serverTimestamp(),
+                owner_uid: currentUser.uid 
+            }); 
+            // Fecha e reseta
+            document.getElementById('modal-feedback').classList.add('hidden'); 
+            seg=0; document.getElementById('timer').innerText="00:00"; upCalc();
+            notaSelecionada = 0; document.querySelectorAll('.star').forEach(st => st.classList.remove('active'));
+            document.getElementById('f-obs').value = '';
+            showTab('diario');
+        }
+
+        async function loadDiario() {
+            const snap = await db.collection('logs').where('owner_uid', '==', currentUser.uid).orderBy('ts', 'desc').get();
+            localData.logs = snap.docs.map(d => ({id: d.id, ...d.data()}));
+            let h = '';
+            localData.logs.forEach(i => {
+                h += `
+                <div class="card p-4 border-l-4 border-l-amber-600 shadow-none relative">
+                    <div class="text-[10px] text-zinc-500 font-bold">${i.data}</div>
+                    <div class="text-lg font-black italic text-white leading-tight mt-1">${i.grao}</div>
+                    <div class="text-xs font-bold text-amber-500 uppercase mt-1">${i.receita} | ${i.tempoTotal} | DOC:${i.docura||3} ACI:${i.acidez||3} AMA:${i.amargor||3} COR:${i.corpo||3}</div>
+                    <p class="mt-2 text-sm italic text-zinc-400 leading-tight">"${i.observacoes || '---'}"</p>
+                    <div class="mt-3 flex justify-between items-center">
+                        <div class="text-xl text-amber-500">${'★'.repeat(i.nota)}${'☆'.repeat(5-i.nota)}</div>
+                        <button onclick='del("logs","${d.id}","O Preparo")' class="text-xs p-2 bg-zinc-900 rounded-lg text-red-800 uppercase font-black">🗑️ Excluir</button>
+                    </div>
+                </div>`;
+            });
+            document.getElementById('list-logs').innerHTML = h;
+        }
+
+        // --- OUTRAS FUNÇÕES AUXILIARES ---
+        function checkMetodo(s) { const d = document.getElementById('r-metodo-outro-div'); d.classList.toggle('hidden', s.value !== 'OUTROS'); if(s.value!=='OUTROS') s.classList.remove('placeholder-style'); }
+        function handleFocus(el) { if(el.value === "--") el.value = ""; el.select(); }
+        async function loadPrep() { 
+            const gc = await db.collection('cafes').get(), rc = await db.collection('receitas').get(); 
+            let gh = '<option value="0">SELECIONE O GRÃO</option>', rh = '<option value="0">SELECIONE A RECEITA</option>'; 
+            gc.forEach(d => {
+                const data = d.data();
+                if(data.owner_uid === currentUser.uid || data.visibilidade === 'publico' || !data.owner_uid) gh += `<option value="${d.id}">${data.nome}</option>`;
+            }); 
+            rc.forEach(d => {
+                const data = d.data();
+                if(data.owner_uid === currentUser.uid || data.visibilidade === 'publico' || !data.owner_uid) rh += `<option value="${d.id}" data-ratio="${data.origRatio}" data-po="${data.origPo}" data-total="${data.origTotal}" data-bloom="${data.bloomMl}" data-sec="${data.bloomSec}" data-atks='${JSON.stringify(data.ataques || [])}'>${data.nome}</option>`;
+            }); 
+            document.getElementById('p-g').innerHTML = gh; document.getElementById('p-r').innerHTML = rh; 
+        }
         async function loadG() { 
             let snap = await db.collection('cafes').get();
             localData.g = snap.docs.map(d => ({id: d.id, ...d.data()}));
             let h = '';
             localData.g.forEach(i => {
-                const isMine = i.owner_uid === currentUser.uid || !i.owner_uid;
+                const isMine = i.owner_uid === currentUser.uid || !i.owner_uid || userProfile.role === 'admin';
                 if(i.visibilidade === 'publico' || isMine) {
-                    h += `<div class="card p-3 flex justify-between items-center border border-zinc-800"><div class="flex-1" onclick="abrirDetalhes('${i.id}')"><div class="text-[8px] text-zinc-600 font-black uppercase">${i.prod || '--'} • por @${i.owner_nick || 'Admin'}</div><div class="text-lg font-black italic uppercase text-white mt-1 leading-tight">${i.nome}</div><div class="text-[8px] text-amber-600 font-bold uppercase mt-1">${i.variedade || '--'} | ${i.processo || '--'}</div></div><div class="flex gap-2"> ${isMine ? `<button onclick="editG('${i.id}', ${JSON.stringify(i).replace(/'/g, "&apos;")})" class="p-2 bg-zinc-900 rounded-xl">✏️</button><button onclick="del('cafes','${i.id}')" class="p-2 bg-zinc-900 rounded-xl">🗑️</button>` : `<span class="text-[8px] font-black text-amber-900 border border-amber-900 p-2 rounded-xl uppercase">Lock</span>`} </div></div>`;
+                    h += `<div class="card p-3 flex justify-between items-center border border-zinc-800"><div class="flex-1 pr-4" onclick="abrirDetalhes('${i.id}')"><div class="text-[8px] text-zinc-600 font-black uppercase">${i.prod || '--'} • por @${i.owner_nick || 'Admin'}</div><div class="text-lg font-black italic uppercase text-white mt-1 leading-tight">${i.nome}</div><div class="text-[8px] text-amber-600 font-bold uppercase mt-1">${i.variedade || '--'} | ${i.processo || '--'}</div></div><div class="flex gap-2"> ${isMine ? `<button onclick="editG('${i.id}', ${JSON.stringify(i).replace(/'/g, "&apos;")})" class="p-2 bg-zinc-900 rounded-xl">✏️</button><button onclick="del('cafes','${i.id}','${i.nome}')" class="p-2 bg-zinc-900 rounded-xl">🗑️</button>` : `<span class="text-[8px] font-black text-amber-900 border border-amber-900 p-2 rounded-xl uppercase">Lock</span>`} </div></div>`;
                 }
             });
             document.getElementById('list-g').innerHTML = h;
         }
-
-        async function loadR() {
-            let snap = await db.collection('receitas').get();
-            localData.r = snap.docs.map(d => ({id: d.id, ...d.data()}));
-            let h = '';
-            localData.r.forEach(i => {
-                const isMine = i.owner_uid === currentUser.uid || !i.owner_uid;
-                if(i.visibilidade === 'publico' || isMine) {
-                    h += `<div class="card p-3 flex justify-between items-center"><div class="flex-1"><div class="text-lg font-black italic uppercase text-amber-500">${i.nome}</div><div class="text-[8px] text-zinc-600 font-black uppercase">por @${i.owner_nick || 'Admin'} | ${i.metodo}</div></div><div class="flex gap-2"> ${isMine ? `<button onclick="editR('${i.id}', ${JSON.stringify(i).replace(/'/g, "&apos;")})" class="p-2 bg-zinc-900 rounded-xl">✏️</button><button onclick="del('receitas','${i.id}')" class="p-2 bg-zinc-900 rounded-xl">🗑️</button>` : ''} <button onclick="showTab('preparo'); handleRecipeSelect('${i.id}')" class="text-xs font-black p-2 bg-amber-600 text-black rounded-lg italic uppercase">Preparar</button> </div></div>`;
-                }
-            });
-            document.getElementById('list-r').innerHTML = h;
-        }
-
-        function checkMetodo(s) { document.getElementById('r-metodo-outro-div').classList.toggle('hidden', s.value !== 'OUTROS'); }
-        function handleFocus(el) { if(el.value === "--") el.value = ""; el.select(); }
-        function addAtackField(ml='', sec='') { document.getElementById('ataques-container').insertAdjacentHTML('beforeend', `<div class="flex gap-2 atk-row"><input type="number" class="flex-1 atk-ml" placeholder="ML" value="${ml}"><input type="number" class="flex-1 atk-sec" placeholder="SEC" value="${sec}"></div>`); }
-        async function loadPrep() { const gc = await db.collection('cafes').get(), rc = await db.collection('receitas').get(); let gh = '<option value="0">SELECIONE O GRÃO</option>', rh = '<option value="0">SELECIONE A RECEITA</option>'; gc.forEach(d => gh += `<option value="${d.id}">${d.data().nome}</option>`); rc.forEach(d => rh += `<option value="${d.id}" data-ratio="${d.data().origRatio}" data-po="${d.data().origPo}" data-total="${d.data().origTotal}" data-bloom="${d.data().bloomMl}" data-sec="${d.data().bloomSec}" data-atks='${JSON.stringify(d.data().ataques || [])}'>${d.data().nome}</option>`); document.getElementById('p-g').innerHTML = gh; document.getElementById('p-r').innerHTML = rh; }
-        function handleRecipeSelect(fid) { const s = document.getElementById('p-r'); if(fid) s.value = fid; const o = s.options[s.selectedIndex]; if(s.value=="0")return; document.getElementById('p-ratio-val').value = o.dataset.ratio; document.getElementById('p-po-val').value = o.dataset.po; upCalc(); }
         async function saveG() { const d = { prod: document.getElementById('g-prod').value.toUpperCase(), nome: document.getElementById('g-nome').value.toUpperCase(), variedade: document.getElementById('g-variedade').value.toUpperCase(), processo: document.getElementById('g-processo').value.toUpperCase(), altitude: document.getElementById('g-altitude').value.toUpperCase(), torra: document.getElementById('g-torra').value, data: document.getElementById('g-data').value, notas: document.getElementById('g-notas').value.toUpperCase(), ts: firebase.firestore.FieldValue.serverTimestamp(), owner_uid: currentUser.uid, owner_nick: userProfile.nick, visibilidade: userProfile.type === 'pessoal' ? 'privado' : 'publico' }; if(editIds.g) await db.collection('cafes').doc(editIds.g).update(d); else await db.collection('cafes').add(d); cancelEdit('g'); loadG(); }
-        function editG(id, i) { editIds.g = id; document.getElementById('g-prod').value = i.prod; document.getElementById('g-nome').value = i.nome; document.getElementById('g-variedade').value = i.variedade || ''; document.getElementById('g-processo').value = i.processo || ''; document.getElementById('g-altitude').value = i.altitude || ''; document.getElementById('g-torra').value = i.torra; document.getElementById('g-data').value = i.data; document.getElementById('g-edit-actions').classList.remove('hidden'); document.getElementById('g-btn-main').classList.add('hidden'); window.scrollTo(0,0); }
-        function editR(id, i) { editIds.r = id; document.getElementById('r-nome').value = i.nome; document.getElementById('r-metodo').value = i.metodo; document.getElementById('r-ratio-base').value = i.origRatio; document.getElementById('r-po-base').value = i.origPo; document.getElementById('r-bloom-ml').value = i.bloomMl; document.getElementById('r-bloom-sec').value = i.bloomSec; document.getElementById('ataques-container').innerHTML = ''; i.ataques?.forEach(a => addAtackField(a.ml, a.sec)); document.getElementById('r-edit-actions').classList.remove('hidden'); document.getElementById('r-btn-main').classList.add('hidden'); window.scrollTo(0,0); }
-        function cancelEdit(t) { editIds[t] = null; document.getElementById(t+'-edit-actions').classList.add('hidden'); document.getElementById(t+'-btn-main').classList.remove('hidden'); }
-        async function del(c, id) { if(confirm("Excluir?")) { await db.collection(c).doc(id).delete(); c==='cafes'?loadG():loadR(); } }
-        function abrirDetalhes(id) { const i = localData.g.find(x => x.id === id); document.getElementById('detalhes-content').innerHTML = `<div class="text-[10px] uppercase font-black text-zinc-500">Produtor: <span class="text-white">${i.prod||'--'}</span></div><div class="text-[10px] uppercase font-black text-zinc-500">Grão: <span class="text-white">${i.nome||'--'}</span></div><div class="mt-4 p-3 bg-zinc-900 rounded-xl italic text-zinc-400 text-xs">"${i.notas||'Sem notas'}"</div>`; document.getElementById('modal-detalhes').classList.remove('hidden'); }
+        function editG(id, i) { editIds.g = id; document.getElementById('g-prod').value = i.prod; document.getElementById('g-nome').value = i.nome; document.getElementById('g-variedade').value = i.variedade || ''; document.getElementById('g-processo').value = i.processo || ''; document.getElementById('g-altitude').value = i.altitude || ''; document.getElementById('g-torra').value = i.torra; document.getElementById('g-data').value = i.data; document.getElementById('g-torra').classList.remove('placeholder-style'); document.getElementById('g-edit-actions').classList.remove('hidden'); document.getElementById('g-btn-main').classList.add('hidden'); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+        function resetG() { document.querySelectorAll('#tab-cafes input, #tab-cafes select, #tab-cafes textarea').forEach(el => el.value = ''); document.getElementById('g-torra').classList.add('placeholder-style'); }
+        function resetR() { document.querySelectorAll('#tab-receitas input, #tab-receitas select').forEach(el => el.value = ''); document.getElementById('ataques-container').innerHTML = ''; document.getElementById('r-metodo').value='V60'; document.getElementById('r-metodo-outro-div').classList.add('hidden'); }
+        async function del(c, id, n) { if(confirm(`Excluir ${n}?`)) { await db.collection(c).doc(id).delete(); if(c==='cafes') loadG(); else if(c==='receitas') loadR(); else loadDiario(); } }
         function fecharDetalhes() { document.getElementById('modal-detalhes').classList.add('hidden'); }
         function openPix(){ document.getElementById('pix-modal').classList.remove('hidden'); if(!document.querySelector("#pix-qrcode img")) new QRCode(document.getElementById("pix-qrcode"), {text: "00020101021126480014br.gov.bcb.pix0119alanpocos@gmail.com5204000053039865802BR5930ALAN DOUGLAS PEREIRA RODRIGUES6005POCOS6304", width: 150, height: 150}); }
         function closePix(){ document.getElementById('pix-modal').classList.add('hidden'); }
@@ -320,25 +487,8 @@
         function handleLogout() { auth.signOut(); }
         function toggleAuth(l) { document.getElementById('login-form').classList.toggle('hidden', !l); document.getElementById('signup-form').classList.toggle('hidden', l); }
         async function handleLogin() { try { await auth.signInWithEmailAndPassword(document.getElementById('login-email').value, document.getElementById('login-pass').value); } catch(e) { alert(e.message); } }
-        async function handleSignup() { const n = document.getElementById('sign-nick').value, t = document.getElementById('sign-type').value; try { const res = await auth.createUserWithEmailAndPassword(document.getElementById('sign-email').value, document.getElementById('sign-pass').value); await db.collection('users').doc(res.user.uid).set({ nick: n, type: t, uid: res.user.uid }); } catch(e) { alert(e.message); } }
+        async function handleSignup() { const n = document.getElementById('sign-nick').value, t = document.getElementById('sign-type').value; try { const res = await auth.createUserWithEmailAndPassword(document.getElementById('sign-email').value, document.getElementById('sign-pass').value); await db.collection('users').doc(res.user.uid).set({ nick: n, type: t, uid: res.user.uid, role: 'user' }); } catch(e) { alert(e.message); } }
         function updateProfileInfo(s) { document.getElementById('profile-info').innerText = s.value === 'pessoal' ? "🔒 PRIVADO" : "🌎 PÚBLICO"; }
-        
-        // FEEDBACK FIXO
-        function abrirFeedback() { 
-            clearInterval(timer); timer = null;
-            document.getElementById('modal-feedback').classList.remove('hidden'); 
-        }
-        function fecharFeedback() { document.getElementById('modal-feedback').classList.add('hidden'); seg=0; document.getElementById('timer').innerText="00:00"; }
-        function exibirCamposFeedback() { document.getElementById('f-pergunta').classList.add('hidden'); document.getElementById('f-form').classList.remove('hidden'); }
-        async function salvarFeedback() { 
-            await db.collection('logs').add({ 
-                grao: document.getElementById('p-g').options[document.getElementById('p-g').selectedIndex].text, 
-                tempo: document.getElementById('timer').innerText, 
-                data: new Date().toLocaleString(), 
-                owner_uid: currentUser.uid 
-            }); 
-            fecharFeedback(); 
-        }
     </script>
 </body>
 </html>
