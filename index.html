@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Coffee Master v8.9 - Deep Clean</title>
+    <title>Coffee Master v9.0 - Roastery Update</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
@@ -74,16 +74,19 @@
         <div id="tab-cafes">
             <div class="card p-4">
                 <span class="label-gold mt-0">Produtor</span><input type="text" id="g-prod">
-                <span class="label-gold">Identificação</span><input type="text" id="g-nome">
+                <span class="label-gold">Identificação do Grão</span><input type="text" id="g-nome">
                 <span class="label-gold">Variedade</span><input type="text" id="g-variedade">
                 <span class="label-gold">Processo</span><input type="text" id="g-processo">
-                <span class="label-gold">Altitude</span><input type="text" id="g-altitude">
+                <div class="flex gap-2">
+                    <div class="flex-1"><span class="label-gold">Altitude</span><input type="text" id="g-altitude"></div>
+                    <div class="flex-1"><span class="label-gold">Torrefação</span><input type="text" id="g-torrefacao"></div>
+                </div>
                 <div class="flex gap-2">
                     <div class="flex-1"><span class="label-gold">Torra</span><select id="g-torra"><option value="" disabled selected>SELECIONAR</option><option>CLARA</option><option>MÉDIA-CLARA</option><option>MÉDIA</option><option>ESCURA</option></select></div>
-                    <div class="flex-1"><span class="label-gold">DATA</span><input type="date" id="g-data"></div>
+                    <div class="flex-1"><span class="label-gold">DATA DA TORRA</span><input type="date" id="g-data"></div>
                 </div>
                 <span class="label-gold">Notas Sensoriais</span><textarea id="g-notas" rows="2"></textarea>
-                <div id="g-edit-actions" class="hidden flex gap-2 mt-4"><button class="btn-gold flex-1 mt-0" onclick="saveG()">Atualizar</button><button class="bg-zinc-800 text-zinc-400 font-black py-4 px-4 rounded-xl flex-[0.3]" onclick="cancelEdit('g')">X</button></div>
+                <div id="g-edit-actions" class="hidden flex gap-2 mt-4"><button class="btn-gold flex-1 mt-0" onclick="saveG()">Atualizar Grão</button><button class="bg-zinc-800 text-zinc-400 font-black py-4 px-4 rounded-xl flex-[0.3]" onclick="cancelEdit('g')">X</button></div>
                 <button class="btn-gold w-full" onclick="saveG()" id="g-btn-main">Salvar no Estoque</button>
             </div>
             <input type="text" id="search-g" class="search-input w-full" oninput="filterList('g')">
@@ -109,7 +112,7 @@
                 </div>
                 <div id="ataques-container" class="mt-2 space-y-1"></div>
                 <button onclick="addAtackField()" class="text-[9px] font-black text-amber-500 mt-2 p-3 border border-dashed border-amber-900 w-full rounded-lg uppercase bg-black">+ ADICIONAR ATAQUE</button>
-                <div id="r-edit-actions" class="hidden flex gap-2 mt-5"><button class="btn-gold flex-1 mt-0" onclick="saveR()">Atualizar</button><button class="bg-zinc-800 text-zinc-400 font-black py-4 px-4 rounded-xl flex-[0.3]" onclick="cancelEdit('r')">X</button></div>
+                <div id="r-edit-actions" class="hidden flex gap-2 mt-5"><button class="btn-gold flex-1 mt-0" onclick="saveR()">Atualizar Receita</button><button class="bg-zinc-800 text-zinc-400 font-black py-4 px-4 rounded-xl flex-[0.3]" onclick="cancelEdit('r')">X</button></div>
                 <button class="btn-gold w-full mt-5" onclick="saveR()" id="r-btn-main">Salvar Receita</button>
             </div>
             <input type="text" id="search-r" class="search-input w-full" oninput="filterList('r')">
@@ -178,7 +181,7 @@
             }
         });
 
-        // CALCULOS ÁGUA RECEITA (FIX)
+        // CALCULOS ÁGUA RECEITA (FIXED)
         ['r-ratio-base', 'r-po-base'].forEach(id => {
             document.getElementById(id).addEventListener('input', () => {
                 const r = parseFloat(document.getElementById('r-ratio-base').value) || 0;
@@ -224,14 +227,14 @@
         function editG(id, i) { 
             editIds.g = id; document.getElementById('g-prod').value = i.prod || ""; document.getElementById('g-nome').value = i.nome || "";
             document.getElementById('g-variedade').value = i.variedade || ""; document.getElementById('g-processo').value = i.processo || "";
-            document.getElementById('g-altitude').value = i.altitude || ""; document.getElementById('g-torra').value = i.torra || "";
-            document.getElementById('g-data').value = i.data || ""; document.getElementById('g-notas').value = i.notas || "";
+            document.getElementById('g-altitude').value = i.altitude || ""; document.getElementById('g-torrefacao').value = i.torrefacao || ""; 
+            document.getElementById('g-torra').value = i.torra || ""; document.getElementById('g-data').value = i.data || ""; document.getElementById('g-notas').value = i.notas || "";
             document.getElementById('g-edit-actions').classList.remove('hidden'); document.getElementById('g-btn-main').classList.add('hidden');
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         async function saveG() { 
-            const d = { prod: document.getElementById('g-prod').value.toUpperCase(), nome: document.getElementById('g-nome').value.toUpperCase(), variedade: document.getElementById('g-variedade').value.toUpperCase(), processo: document.getElementById('g-processo').value.toUpperCase(), altitude: document.getElementById('g-altitude').value.toUpperCase(), torra: document.getElementById('g-torra').value, data: document.getElementById('g-data').value, notas: document.getElementById('g-notas').value.toUpperCase(), ts: firebase.firestore.FieldValue.serverTimestamp(), owner_uid: currentUser.uid, owner_nick: userProfile.nick, visibilidade: userProfile.type === 'pessoal' ? 'privado' : 'publico' };
+            const d = { prod: document.getElementById('g-prod').value.toUpperCase(), nome: document.getElementById('g-nome').value.toUpperCase(), variedade: document.getElementById('g-variedade').value.toUpperCase(), processo: document.getElementById('g-processo').value.toUpperCase(), altitude: document.getElementById('g-altitude').value.toUpperCase(), torrefacao: document.getElementById('g-torrefacao').value.toUpperCase(), torra: document.getElementById('g-torra').value, data: document.getElementById('g-data').value, notas: document.getElementById('g-notas').value.toUpperCase(), ts: firebase.firestore.FieldValue.serverTimestamp(), owner_uid: currentUser.uid, owner_nick: userProfile.nick, visibilidade: userProfile.type === 'pessoal' ? 'privado' : 'publico' };
             if (editIds.g) await db.collection('cafes').doc(editIds.g).update(d); else await db.collection('cafes').add(d);
             cancelEdit('g'); loadG(); 
         }
@@ -316,10 +319,7 @@
         function setRating(n) {
             notaSelecionada = n;
             const stars = document.querySelectorAll('.star');
-            stars.forEach((s, i) => {
-                if(i < n) s.classList.add('active');
-                else s.classList.remove('active');
-            });
+            stars.forEach((s, i) => { if(i < n) s.classList.add('active'); else s.classList.remove('active'); });
         }
 
         function abrirFeedback() { if(timer){ clearInterval(timer); timer = null; } document.getElementById('modal-feedback').classList.remove('hidden'); }
@@ -344,7 +344,19 @@
         function fecharDetalhes() { document.getElementById('modal-detalhes').classList.add('hidden'); }
         function abrirDetalhes(id) { 
             const i = localData.g.find(x => x.id === id); 
-            document.getElementById('detalhes-content').innerHTML = `<div><span class="label-gold">PRODUTOR</span><p class="text-white font-bold italic">${i.prod||'--'}</p></div><div><span class="label-gold">VARIEDADE | PROCESSO | ALTITUDE</span><p class="text-white font-bold italic">${i.variedade||'--'} | ${i.processo||'--'} | ${i.altitude||'--'}</p></div><div><span class="label-gold">NOTAS</span><p class="text-zinc-400 italic text-sm leading-tight">"${i.notas||'--'}"</p></div>`; 
+            document.getElementById('detalhes-content').innerHTML = `
+                <div><span class="label-gold">PRODUTOR</span><p class="text-white font-bold italic">${i.prod||'--'}</p></div>
+                <div><span class="label-gold">IDENTIFICAÇÃO</span><p class="text-white font-bold italic">${i.nome||'--'}</p></div>
+                <div><span class="label-gold">TORREFAÇÃO</span><p class="text-amber-500 font-bold italic">${i.torrefacao||'--'}</p></div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div><span class="label-gold">VARIEDADE</span><p class="text-white font-bold italic text-sm">${i.variedade||'--'}</p></div>
+                    <div><span class="label-gold">PROCESSO</span><p class="text-white font-bold italic text-sm">${i.processo||'--'}</p></div>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div><span class="label-gold">ALTITUDE</span><p class="text-white font-bold italic text-sm">${i.altitude||'--'}</p></div>
+                    <div><span class="label-gold">TORRA</span><p class="text-white font-bold italic text-sm">${i.torra||'--'}</p></div>
+                </div>
+                <div><span class="label-gold">NOTAS</span><p class="text-zinc-400 italic text-sm leading-tight">"${i.notas||'--'}"</p></div>`; 
             document.getElementById('modal-detalhes').classList.remove('hidden'); 
         }
         async function loadDiario() { const snap = await db.collection('logs').where('owner_uid', '==', currentUser.uid).orderBy('ts', 'desc').get(); let h = ''; snap.forEach(d => { const i = d.data(); h += `<div class="card p-4 border-l-4 border-l-amber-600 shadow-none"><div class="text-[10px] text-zinc-500 font-bold">${i.data}</div><div class="text-lg font-black italic text-white leading-tight mt-1">${i.grao}</div><div class="text-xs font-bold text-amber-500 uppercase mt-1">${i.receita} | ${i.tempoTotal}</div><div class="mt-3 flex justify-between items-center"><div class="text-xl text-amber-500">${'★'.repeat(i.nota)}${'☆'.repeat(5-i.nota)}</div><button onclick='del("logs","${d.id}","Diário")' class="text-xs p-2 bg-zinc-900 rounded-lg text-red-800 uppercase font-black">🗑️</button></div></div>`; }); document.getElementById('list-logs').innerHTML = h; }
@@ -354,7 +366,7 @@
         async function handleLogin() { try { await auth.signInWithEmailAndPassword(document.getElementById('login-email').value, document.getElementById('login-pass').value); } catch(e) { alert(e.message); } }
         async function handleSignup() { const n = document.getElementById('sign-nick').value, t = document.getElementById('sign-type').value; try { const res = await auth.createUserWithEmailAndPassword(document.getElementById('sign-email').value, document.getElementById('sign-pass').value); await db.collection('users').doc(res.user.uid).set({ nick: n, type: t, uid: res.user.uid, role: 'user' }); } catch(e) { alert(e.message); } }
         function updateProfileInfo(s) { document.getElementById('profile-info').innerText = s.value === 'pessoal' ? "🔒 PRIVADO" : "🌎 PÚBLICO"; }
-        function openPix(){ document.getElementById('pix-modal').classList.remove('hidden'); if(!document.querySelector("#pix-qrcode img")) new QRCode(document.getElementById("pix-qrcode"), {text: "00020101021126480014br.gov.bcb.pix0119alanpocos@gmail.com5204000053039865802BR5930ALAN DOUGLAS PEREIRA RODRIGUES6005POCOS6304", width: 150, height: 150}); }
+        function openPix(){ document.getElementById('pix-modal').classList.remove('hidden'); if(!document.querySelector("#pix-qrcode img")) new QRCode(document.getElementById("pix-p-qrcode"), {text: "00020101021126480014br.gov.bcb.pix0119alanpocos@gmail.com5204000053039865802BR5930ALAN DOUGLAS PEREIRA RODRIGUES6005POCOS6304", width: 150, height: 150}); }
         function closePix(){ document.getElementById('pix-modal').classList.add('hidden'); }
         function copyPix(){ navigator.clipboard.writeText("alanpocos@gmail.com"); alert('Pix copiado!'); }
     </script>
