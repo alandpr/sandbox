@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Coffee Master v8.8 - Calibration</title>
+    <title>Coffee Master v8.9 - Deep Clean</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
@@ -22,7 +22,7 @@
         .step-box-active { border-color: #f59e0b !important; background: #221a05; box-shadow: 0 0 20px rgba(245,158,11,0.15); }
         #auth-screen, #modal-feedback, #pix-modal, #modal-detalhes { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0a0a0a; z-index: 2000; padding: 20px; display: flex; flex-direction: column; justify-content: center; overflow-y: auto; }
         .hidden { display: none !important; }
-        .star { font-size: 28px; cursor: pointer; color: #333; }
+        .star { font-size: 35px; cursor: pointer; color: #333; padding: 5px; }
         .star.active { color: #f59e0b; }
         .search-input { background: #000; border: 1px solid #333; font-size: 11px; padding: 10px; margin-bottom: 15px; border-radius: 10px; text-transform: uppercase; }
         input[type=range] { -webkit-appearance: none; background: #333; height: 6px; border-radius: 5px; margin: 10px 0; }
@@ -37,13 +37,13 @@
         <div class="card w-full max-w-sm mx-auto border-amber-600">
             <h1 class="text-3xl font-black text-amber-500 italic uppercase text-center mb-8">COFFEE MASTER</h1>
             <div id="login-form">
-                <span class="label-gold mt-0">E-mail</span><input type="email" id="login-email" placeholder="SEU@EMAIL.COM">
-                <span class="label-gold">Senha</span><input type="password" id="login-pass" placeholder="******">
+                <span class="label-gold mt-0">E-mail</span><input type="email" id="login-email">
+                <span class="label-gold">Senha</span><input type="password" id="login-pass">
                 <button class="btn-gold w-full mt-6" onclick="handleLogin()">Entrar</button>
                 <p class="text-[10px] text-center mt-6 font-black uppercase text-zinc-500">Novo? <button class="text-amber-500 underline" onclick="toggleAuth(false)">Criar agora</button></p>
             </div>
             <div id="signup-form" class="hidden">
-                <span class="label-gold mt-0">Nickname</span><input type="text" id="sign-nick" placeholder="@ALAN">
+                <span class="label-gold mt-0">Nickname</span><input type="text" id="sign-nick">
                 <span class="label-gold">E-mail</span><input type="email" id="sign-email">
                 <span class="label-gold">Senha</span><input type="password" id="sign-pass">
                 <span class="label-gold">Perfil</span>
@@ -60,7 +60,7 @@
             <div><h1 class="text-2xl font-black text-amber-500 italic uppercase leading-none">COFFEE MASTER</h1><span id="user-display" class="text-[8px] font-black text-zinc-600 uppercase italic"></span></div>
             <div class="flex gap-2">
                 <button onclick="openPix()" class="bg-zinc-900 text-[9px] font-black p-2 rounded-lg border border-amber-600 text-amber-500 italic">PAGAR CAFÉ ☕</button>
-                <button onclick="handleLogout()" class="bg-zinc-900 text-[9px] font-black p-2 rounded-lg border border-zinc-700 text-zinc-500 italic">Sair</button>
+                <button onclick="handleLogout()" class="bg-zinc-900 text-[9px] font-black p-2 rounded-lg border border-zinc-700 text-zinc-500">Sair</button>
             </div>
         </div>
         
@@ -73,8 +73,8 @@
 
         <div id="tab-cafes">
             <div class="card p-4">
-                <span class="label-gold mt-0">Produtor</span><input type="text" id="g-prod" placeholder="NOME DO PRODUTOR">
-                <span class="label-gold">Identificação</span><input type="text" id="g-nome" placeholder="EX: FAZENDA SANTA CLARA">
+                <span class="label-gold mt-0">Produtor</span><input type="text" id="g-prod">
+                <span class="label-gold">Identificação</span><input type="text" id="g-nome">
                 <span class="label-gold">Variedade</span><input type="text" id="g-variedade">
                 <span class="label-gold">Processo</span><input type="text" id="g-processo">
                 <span class="label-gold">Altitude</span><input type="text" id="g-altitude">
@@ -83,10 +83,10 @@
                     <div class="flex-1"><span class="label-gold">DATA</span><input type="date" id="g-data"></div>
                 </div>
                 <span class="label-gold">Notas Sensoriais</span><textarea id="g-notas" rows="2"></textarea>
-                <div id="g-edit-actions" class="hidden flex gap-2 mt-4"><button class="btn-gold flex-1 mt-0" onclick="saveG()">Atualizar Grão</button><button class="bg-zinc-800 text-zinc-400 font-black py-4 px-4 rounded-xl flex-[0.3] text-xs uppercase" onclick="cancelEdit('g')">X</button></div>
+                <div id="g-edit-actions" class="hidden flex gap-2 mt-4"><button class="btn-gold flex-1 mt-0" onclick="saveG()">Atualizar</button><button class="bg-zinc-800 text-zinc-400 font-black py-4 px-4 rounded-xl flex-[0.3]" onclick="cancelEdit('g')">X</button></div>
                 <button class="btn-gold w-full" onclick="saveG()" id="g-btn-main">Salvar no Estoque</button>
             </div>
-            <input type="text" id="search-g" class="search-input w-full" placeholder="🔍 BUSCAR GRÃO OU PRODUTOR..." oninput="filterList('g')">
+            <input type="text" id="search-g" class="search-input w-full" oninput="filterList('g')">
             <div id="list-g" class="space-y-3"></div>
         </div>
 
@@ -94,12 +94,12 @@
             <div class="card p-4">
                 <span class="label-gold mt-0">Nome da Receita</span><input type="text" id="r-nome">
                 <span class="label-gold">Método</span>
-                <select id="r-metodo" onchange="checkMetodo(this)"><option>V60</option><option>AEROPRESS</option><option>KOAR</option><option value="OUTROS">OUTROS...</option></select>
-                <div id="r-metodo-outro-div" class="hidden mt-2"><input type="text" id="r-metodo-outro" placeholder="QUAL MÉTODO?"></div>
+                <select id="r-metodo" onchange="checkMetodo(this)"><option value="" disabled selected>SELECIONAR</option><option>V60</option><option>AEROPRESS</option><option>KOAR</option><option value="OUTROS">OUTROS...</option></select>
+                <div id="r-metodo-outro-div" class="hidden mt-2"><input type="text" id="r-metodo-outro"></div>
                 <div class="bg-zinc-900 p-3 rounded-xl border border-dashed border-zinc-700 mt-4">
                     <div class="grid grid-cols-3 gap-2">
-                        <div><span class="label-gold mt-0">Ratio</span><input type="number" id="r-ratio-base" placeholder="15"></div>
-                        <div><span class="label-gold mt-0">Pó (g)</span><input type="number" id="r-po-base" placeholder="15"></div>
+                        <div><span class="label-gold mt-0">Ratio</span><input type="number" id="r-ratio-base"></div>
+                        <div><span class="label-gold mt-0">Pó (g)</span><input type="number" id="r-po-base"></div>
                         <div><span class="label-gold mt-0">Total (ml)</span><input type="number" id="r-total-base" readonly class="text-amber-500 font-bold bg-transparent border-none"></div>
                     </div>
                 </div>
@@ -108,11 +108,11 @@
                     <div><span class="label-gold">Tempo (s)</span><input type="number" id="r-bloom-sec"></div>
                 </div>
                 <div id="ataques-container" class="mt-2 space-y-1"></div>
-                <button onclick="addAtackField()" class="text-[9px] font-black text-amber-500 mt-2 p-3 border border-dashed border-amber-900 w-full rounded-lg uppercase bg-black shadow-inner">+ ADICIONAR ATAQUE</button>
-                <div id="r-edit-actions" class="hidden flex gap-2 mt-5"><button class="btn-gold flex-1 mt-0" onclick="saveR()">Atualizar Receita</button><button class="bg-zinc-800 text-zinc-400 font-black py-4 px-4 rounded-xl flex-[0.3] text-xs uppercase" onclick="cancelEdit('r')">X</button></div>
+                <button onclick="addAtackField()" class="text-[9px] font-black text-amber-500 mt-2 p-3 border border-dashed border-amber-900 w-full rounded-lg uppercase bg-black">+ ADICIONAR ATAQUE</button>
+                <div id="r-edit-actions" class="hidden flex gap-2 mt-5"><button class="btn-gold flex-1 mt-0" onclick="saveR()">Atualizar</button><button class="bg-zinc-800 text-zinc-400 font-black py-4 px-4 rounded-xl flex-[0.3]" onclick="cancelEdit('r')">X</button></div>
                 <button class="btn-gold w-full mt-5" onclick="saveR()" id="r-btn-main">Salvar Receita</button>
             </div>
-            <input type="text" id="search-r" class="search-input w-full" placeholder="🔍 BUSCAR RECEITA..." oninput="filterList('r')">
+            <input type="text" id="search-r" class="search-input w-full" oninput="filterList('r')">
             <div id="list-r" class="space-y-3"></div>
         </div>
 
@@ -123,12 +123,12 @@
                     <div><span class="label-gold mt-0">Pó (g)</span><input type="text" id="p-po-val" value="--" onfocus="handleFocus(this)" oninput="upCalc()" class="text-center text-xl text-amber-500 font-black bg-transparent border-none"></div>
                     <div><span class="label-gold mt-0">Ratio</span><input type="text" id="p-ratio-val" value="--" onfocus="handleFocus(this)" oninput="upCalc()" class="text-center text-xl text-white font-black bg-transparent border-none"></div>
                 </div>
-                <div class="bg-zinc-900 rounded-2xl py-4 px-5 mt-6 border border-zinc-800 flex justify-between items-center shadow-inner">
+                <div class="bg-zinc-900 rounded-2xl py-4 px-5 mt-6 border border-zinc-800 flex justify-between items-center">
                     <span class="text-[10px] font-black text-zinc-500 uppercase italic">Água Total</span>
                     <div class="text-4xl font-black text-white italic"><span id="p-total">0</span>ml</div>
                 </div>
                 <div id="p-steps" class="flex gap-3 mt-6 overflow-x-auto pb-4 scroll-smooth no-scrollbar"></div>
-                <div id="timer" class="text-6xl font-black my-6 text-center italic tracking-tighter">00:00</div>
+                <div id="timer" class="text-6xl font-black my-6 text-center italic">00:00</div>
                 <button id="btn-timer-main" onclick="toggleTimer()" class="bg-green-700 text-white font-black py-4 rounded-xl w-full uppercase">Iniciar</button>
                 <button onclick="abrirFeedback()" class="bg-amber-600 text-black font-black py-4 rounded-xl w-full mt-3 text-sm uppercase italic">Finalizar Preparo</button>
             </div>
@@ -136,7 +136,26 @@
         <div id="tab-diario" class="hidden"><div id="list-logs" class="space-y-3"></div></div>
     </div>
 
-    <div id="modal-feedback" class="hidden"><div class="card w-full max-w-sm mx-auto shadow-2xl"><div class="flex justify-between items-center mb-6"><h3 class="text-amber-500 font-black italic uppercase text-xl">Novo Diário</h3><button onclick="fecharFeedback()" class="text-zinc-600 font-black text-xl">X</button></div><div class="flex justify-center gap-1 mb-6" id="star-rating"><span class="star" data-v="1">★</span><span class="star" data-v="2">★</span><span class="star" data-v="3">★</span><span class="star" data-v="4">★</span><span class="star" data-v="5">★</span></div><span class="label-gold mt-0">Observações</span><textarea id="f-obs" placeholder="EX: FICOU DOCE..." rows="3"></textarea><div class="mt-4 space-y-3"><div><div class="flex justify-between text-[10px] font-black uppercase text-zinc-500"><span>Doçura</span><span id="v-doce">3</span></div><input type="range" id="f-doce" min="1" max="5" value="3" oninput="document.getElementById('v-doce').innerText=this.value" class="w-full"></div><div><div class="flex justify-between text-[10px] font-black uppercase text-zinc-500"><span>Acidez</span><span id="v-acidez">3</span></div><input type="range" id="f-acidez" min="1" max="5" value="3" oninput="document.getElementById('v-acidez').innerText=this.value" class="w-full"></div><div><div class="flex justify-between text-[10px] font-black uppercase text-zinc-500"><span>Amargor</span><span id="v-amargor">3</span></div><input type="range" id="f-amargor" min="1" max="5" value="3" oninput="document.getElementById('v-amargor').innerText=this.value" class="w-full"></div><div><div class="flex justify-between text-[10px] font-black uppercase text-zinc-500"><span>Corpo</span><span id="v-corpo">3</span></div><input type="range" id="f-corpo" min="1" max="5" value="3" oninput="document.getElementById('v-corpo').innerText=this.value" class="w-full"></div></div><button class="btn-gold w-full mt-8" onclick="salvarFeedback()">SALVAR NO DIÁRIO</button></div></div>
+    <div id="modal-feedback" class="hidden">
+        <div class="card w-full max-w-sm mx-auto shadow-2xl">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-amber-500 font-black italic uppercase text-xl">Novo Diário</h3>
+                <button onclick="fecharFeedback()" class="text-zinc-600 font-black text-xl">X</button>
+            </div>
+            <div class="flex justify-center gap-1 mb-6" id="star-rating">
+                <span class="star" onclick="setRating(1)">★</span><span class="star" onclick="setRating(2)">★</span><span class="star" onclick="setRating(3)">★</span><span class="star" onclick="setRating(4)">★</span><span class="star" onclick="setRating(5)">★</span>
+            </div>
+            <span class="label-gold mt-0">Observações</span><textarea id="f-obs" rows="3"></textarea>
+            <div class="mt-4 space-y-3">
+                <div><div class="flex justify-between text-[10px] font-black text-zinc-500"><span>DOÇURA</span><span id="v-doce">3</span></div><input type="range" id="f-doce" min="1" max="5" value="3" oninput="document.getElementById('v-doce').innerText=this.value" class="w-full"></div>
+                <div><div class="flex justify-between text-[10px] font-black text-zinc-500"><span>ACIDEZ</span><span id="v-acidez">3</span></div><input type="range" id="f-acidez" min="1" max="5" value="3" oninput="document.getElementById('v-acidez').innerText=this.value" class="w-full"></div>
+                <div><div class="flex justify-between text-[10px] font-black text-zinc-500"><span>AMARGOR</span><span id="v-amargor">3</span></div><input type="range" id="f-amargor" min="1" max="5" value="3" oninput="document.getElementById('v-amargor').innerText=this.value" class="w-full"></div>
+                <div><div class="flex justify-between text-[10px] font-black text-zinc-500"><span>CORPO</span><span id="v-corpo">3</span></div><input type="range" id="f-corpo" min="1" max="5" value="3" oninput="document.getElementById('v-corpo').innerText=this.value" class="w-full"></div>
+            </div>
+            <button class="btn-gold w-full mt-8" onclick="salvarFeedback()">SALVAR NO DIÁRIO</button>
+        </div>
+    </div>
+
     <div id="pix-modal" class="hidden" onclick="closePix()"><div class="card text-center w-full max-w-sm mx-auto" onclick="event.stopPropagation()"><h3 class="text-amber-500 font-black italic uppercase">Apoie o Projeto ☕</h3><div id="pix-qrcode" class="mb-5 inline-block mx-auto"></div><button onclick="copyPix()" class="btn-gold w-full mt-1">Copiar Pix</button></div></div>
 
     <script>
@@ -159,12 +178,12 @@
             }
         });
 
-        // CALCULOS ÁGUA
+        // CALCULOS ÁGUA RECEITA (FIX)
         ['r-ratio-base', 'r-po-base'].forEach(id => {
             document.getElementById(id).addEventListener('input', () => {
                 const r = parseFloat(document.getElementById('r-ratio-base').value) || 0;
                 const p = parseFloat(document.getElementById('r-po-base').value) || 0;
-                document.getElementById('r-total-base').value = Math.round(r * p);
+                document.getElementById('r-total-base').value = r > 0 && p > 0 ? Math.round(r * p) : "";
             });
         });
 
@@ -178,6 +197,9 @@
                 document.getElementById('p-total').innerText = '0';
                 document.getElementById('p-steps').innerHTML = '';
             }
+            if(t === 'receitas' && !editIds.r) resetR();
+            if(t === 'cafes' && !editIds.g) resetG();
+            
             ['cafes','receitas','preparo','diario'].forEach(i=>{ 
                 document.getElementById('tab-'+i).classList.toggle('hidden', i!==t); 
                 document.getElementById('btn-'+i).classList.toggle('active-tab', i===t); 
@@ -185,7 +207,7 @@
             if(t==='cafes') loadG(); if(t==='receitas') loadR(); if(t==='preparo') loadPrep(); if(t==='diario') loadDiario();
         }
 
-        // --- GRÃOS ---
+        // --- GRAOS ---
         async function loadG() { 
             let snap = await db.collection('cafes').get();
             localData.g = snap.docs.map(d => ({id: d.id, ...d.data()}));
@@ -193,17 +215,17 @@
             localData.g.forEach(i => {
                 const isMine = i.owner_uid === currentUser.uid || !i.owner_uid || userProfile.role === 'admin';
                 if(i.visibilidade === 'publico' || isMine) {
-                    h += `<div class="card p-3 flex justify-between items-center border border-zinc-800"><div class="flex-1 pr-4" onclick="abrirDetalhes('${i.id}')"><div class="text-[8px] text-zinc-600 font-black uppercase">${i.prod || '--'} • por @${i.owner_nick || 'Admin'}</div><div class="text-lg font-black italic uppercase text-white mt-1 leading-tight">${i.nome}</div><div class="text-[8px] text-amber-600 font-bold uppercase mt-1">${i.variedade || '--'} | ${i.processo || '--'}</div></div><div class="flex gap-2"> ${isMine ? `<button onclick='editG("${i.id}", ${JSON.stringify(i).replace(/'/g, "&apos;")})' class="text-lg p-2 bg-zinc-900 rounded-xl">✏️</button><button onclick='del("cafes","${i.id}","${i.nome}")' class="text-lg p-2 bg-zinc-900 rounded-xl">🗑️</button>` : `<span class="text-[8px] font-black text-amber-900 border border-amber-900 p-2 rounded-xl uppercase">Lock</span>`} </div></div>`;
+                    h += `<div class="card p-3 flex justify-between items-center border border-zinc-800"><div class="flex-1 pr-4" onclick="abrirDetalhes('${i.id}')"><div class="text-[8px] text-zinc-600 font-black uppercase">${i.prod || '--'} • por @${i.owner_nick || 'Admin'}</div><div class="text-lg font-black italic uppercase text-white mt-1 leading-tight">${i.nome}</div><div class="text-[8px] text-amber-600 font-bold uppercase mt-1">${i.variedade || '--'} | ${i.processo || '--'} | ${i.altitude || '--'}</div></div><div class="flex gap-2"> ${isMine ? `<button onclick='editG("${i.id}", ${JSON.stringify(i).replace(/'/g, "&apos;")})' class="text-lg p-2 bg-zinc-900 rounded-xl">✏️</button><button onclick='del("cafes","${i.id}","${i.nome}")' class="text-lg p-2 bg-zinc-900 rounded-xl">🗑️</button>` : `<span class="text-[8px] font-black text-amber-900 border border-amber-900 p-2 rounded-xl">LOCK</span>`} </div></div>`;
                 }
             });
             document.getElementById('list-g').innerHTML = h;
         }
 
         function editG(id, i) { 
-            editIds.g = id; document.getElementById('g-prod').value = i.prod; document.getElementById('g-nome').value = i.nome;
-            document.getElementById('g-variedade').value = i.variedade || ''; document.getElementById('g-processo').value = i.processo || '';
-            document.getElementById('g-altitude').value = i.altitude || ''; document.getElementById('g-torra').value = i.torra;
-            document.getElementById('g-data').value = i.data; document.getElementById('g-notas').value = i.notas || '';
+            editIds.g = id; document.getElementById('g-prod').value = i.prod || ""; document.getElementById('g-nome').value = i.nome || "";
+            document.getElementById('g-variedade').value = i.variedade || ""; document.getElementById('g-processo').value = i.processo || "";
+            document.getElementById('g-altitude').value = i.altitude || ""; document.getElementById('g-torra').value = i.torra || "";
+            document.getElementById('g-data').value = i.data || ""; document.getElementById('g-notas').value = i.notas || "";
             document.getElementById('g-edit-actions').classList.remove('hidden'); document.getElementById('g-btn-main').classList.add('hidden');
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
@@ -222,7 +244,7 @@
             localData.r.forEach(i => {
                 const isMine = i.owner_uid === currentUser.uid || !i.owner_uid || userProfile.role === 'admin';
                 if(i.visibilidade === 'publico' || isMine) {
-                    h += `<div class="card p-3 flex justify-between items-center"><div class="flex-1"><div class="text-lg font-black italic uppercase text-amber-500">${i.nome}</div><div class="text-[8px] text-zinc-600 font-black uppercase">por @${i.owner_nick || 'Admin'} | ${i.metodo}</div></div><div class="flex gap-2"> ${isMine ? `<button onclick='editR("${i.id}", ${JSON.stringify(i).replace(/'/g, "&apos;")})' class="p-2 bg-zinc-900 rounded-lg">✏️</button><button onclick='del("receitas","${i.id}","${i.nome}")' class="p-2 bg-zinc-900 rounded-lg">🗑️</button>` : ''} <button onclick="showTab('preparo'); handleRecipeSelect('${i.id}')" class="text-xs font-black p-2 bg-amber-600 text-black rounded-lg italic uppercase">Preparar</button> </div></div>`;
+                    h += `<div class="card p-3 flex justify-between items-center"><div class="flex-1"><div class="text-lg font-black italic uppercase text-amber-500">${i.nome}</div><div class="text-[8px] text-zinc-600 font-black uppercase">por @${i.owner_nick || 'Admin'} | ${i.metodo}</div></div><div class="flex gap-2"> ${isMine ? `<button onclick='editR("${i.id}", ${JSON.stringify(i).replace(/'/g, "&apos;")})' class="text-lg p-2 bg-zinc-900 rounded-xl">✏️</button><button onclick='del("receitas","${i.id}","${i.nome}")' class="text-lg p-2 bg-zinc-900 rounded-xl">🗑️</button>` : ''} <button onclick="showTab('preparo'); handleRecipeSelect('${i.id}')" class="text-xs font-black p-2 bg-amber-600 text-black rounded-lg italic uppercase">Preparar</button> </div></div>`;
                 }
             });
             document.getElementById('list-r').innerHTML = h;
@@ -242,7 +264,7 @@
             const tB = parseFloat(document.getElementById('r-total-base').value)||0, bM = parseFloat(document.getElementById('r-bloom-ml').value)||0;
             let sumAtks = bM; const atks = [];
             document.querySelectorAll('.atk-row').forEach(row => { const ml = parseFloat(row.querySelector('.atk-ml').value)||0; sumAtks += ml; atks.push({ ml, sec: parseFloat(row.querySelector('.atk-sec').value)||0 }); });
-            if (Math.round(sumAtks) !== Math.round(tB)) return alert(`Soma incorreta! Total deve ser ${tB}ml.`);
+            if (Math.round(sumAtks) !== Math.round(tB)) return alert(`Erro: Somas ${sumAtks}ml vs Total ${tB}ml.`);
             let met = document.getElementById('r-metodo').value; if(met === 'OUTROS') met = document.getElementById('r-metodo-outro').value.toUpperCase();
             const d = { nome: document.getElementById('r-nome').value.toUpperCase(), metodo: met, origRatio: parseFloat(document.getElementById('r-ratio-base').value), origPo: parseFloat(document.getElementById('r-po-base').value), origTotal: tB, bloomMl: bM, bloomSec: parseFloat(document.getElementById('r-bloom-sec').value), ataques: atks, ts: firebase.firestore.FieldValue.serverTimestamp(), owner_uid: currentUser.uid, owner_nick: userProfile.nick, visibilidade: userProfile.type === 'pessoal' ? 'privado' : 'publico' };
             if(editIds.r) await db.collection('receitas').doc(editIds.r).update(d); else await db.collection('receitas').add(d);
@@ -279,7 +301,7 @@
         function renderSteps(segA) {
             let h = '', tIdx = 0; if(activeStepsData.times.length > 0 && segA >= activeStepsData.times[activeStepsData.times.length-1]) { tIdx = activeStepsData.steps.length; } else { activeStepsData.times.forEach((t, i) => { if(segA >= t) tIdx = i + 1; }); }
             activeStepsData.steps.forEach((s, idx) => {
-                const act = idx === tIdx; h += `<div class="step-box ${act?'step-box-active':''}" id="p-step-${idx}"><div class="text-[9px] ${act?'text-amber-500':'text-zinc-600'} font-black uppercase">${s.type}</div><div class="text-xl font-black italic ${act?'text-white':'text-zinc-500'} mt-1">${s.ml}ml</div><div class="text-[10px] text-amber-600 font-bold uppercase mt-1">SOMA: ${s.cum}ml</div><div class="text-[8px] text-zinc-500 font-bold mt-1">TEMPO: ${s.sec}s</div></div>`;
+                const act = idx === tIdx; h += `<div class="step-box ${act?'step-box-active':''}" id="p-step-${idx}"><div class="text-[9px] ${act?'text-amber-500':'text-zinc-600'} font-black uppercase">${s.type}</div><div class="text-xl font-black italic ${act?'text-white':'text-zinc-500'} mt-1">${s.ml}ml</div><div class="text-[10px] text-amber-600 font-bold uppercase mt-1">SOMA: ${s.cum}ml</div><div class="text-[8px] text-zinc-500 font-bold mt-1">ESPERA: ${s.sec}s</div></div>`;
             });
             document.getElementById('p-steps').innerHTML = h;
             const activeEl = document.getElementById(`p-step-${tIdx}`); if(activeEl) activeEl.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
@@ -290,19 +312,43 @@
             else { timer = setInterval(() => { seg++; document.getElementById('timer').innerText = `${Math.floor(seg/60).toString().padStart(2,'0')}:${(seg%60).toString().padStart(2,'0')}`; renderSteps(seg); }, 1000); document.getElementById('btn-timer-main').innerText="PAUSAR"; } 
         }
 
+        // --- FEEDBACK / ESTRELAS ---
+        function setRating(n) {
+            notaSelecionada = n;
+            const stars = document.querySelectorAll('.star');
+            stars.forEach((s, i) => {
+                if(i < n) s.classList.add('active');
+                else s.classList.remove('active');
+            });
+        }
+
+        function abrirFeedback() { if(timer){ clearInterval(timer); timer = null; } document.getElementById('modal-feedback').classList.remove('hidden'); }
+        function fecharFeedback() { document.getElementById('modal-feedback').classList.add('hidden'); seg=0; document.getElementById('timer').innerText="00:00"; upCalc(); setRating(0); document.getElementById('f-obs').value=""; }
+        async function salvarFeedback() { 
+            const g = document.getElementById('p-g'), r = document.getElementById('p-r'); if(g.value=="0"||r.value=="0") return alert("Selecione Grão e Receita!");
+            await db.collection('logs').add({ grao: g.options[g.selectedIndex].text, receita: r.options[r.selectedIndex].text, tempoTotal: document.getElementById('timer').innerText, nota: notaSelecionada, observacoes: document.getElementById('f-obs').value.toUpperCase(), docura: document.getElementById('f-doce').value, acidez: document.getElementById('f-acidez').value, amargor: document.getElementById('f-amargor').value, corpo: document.getElementById('f-corpo').value, data: new Date().toLocaleString(), ts: firebase.firestore.FieldValue.serverTimestamp(), owner_uid: currentUser.uid });
+            fecharFeedback(); showTab('diario');
+        }
+
         // --- UTILITÁRIOS ---
         function cancelEdit(t) { 
             editIds[t] = null; document.getElementById(t+'-edit-actions').classList.add('hidden'); document.getElementById(t+'-btn-main').classList.remove('hidden');
             if(t==='g') resetG(); else resetR();
         }
-        function resetG() { document.querySelectorAll('#tab-cafes input, #tab-cafes select, #tab-cafes textarea').forEach(el => el.value = ''); }
-        function resetR() { document.querySelectorAll('#tab-receitas input, #tab-receitas select').forEach(el => el.value = ''); document.getElementById('ataques-container').innerHTML = ''; document.getElementById('r-metodo-outro-div').classList.add('hidden'); }
+        function resetG() { document.querySelectorAll('#tab-cafes input, #tab-cafes select, #tab-cafes textarea').forEach(el => el.value = ""); }
+        function resetR() { document.querySelectorAll('#tab-receitas input, #tab-receitas select').forEach(el => el.value = ""); document.getElementById('ataques-container').innerHTML = ''; document.getElementById('r-metodo-outro-div').classList.add('hidden'); }
         async function del(c, id, n) { if(confirm(`Excluir ${n}?`)) { await db.collection(c).doc(id).delete(); if(c==='cafes') loadG(); else if(c==='receitas') loadR(); else loadDiario(); } }
         function checkMetodo(s) { document.getElementById('r-metodo-outro-div').classList.toggle('hidden', s.value !== 'OUTROS'); }
-        function addAtackField(ml='', sec='') { document.getElementById('ataques-container').insertAdjacentHTML('beforeend', `<div class="flex gap-2 atk-row items-center bg-zinc-900 p-2 rounded-lg"><input type="number" class="flex-1 atk-ml" placeholder="ML" value="${ml}"><input type="number" class="flex-1 atk-sec" placeholder="SEC" value="${sec}"><button onclick="this.closest('.atk-row').remove()" class="text-zinc-600 font-bold px-2">X</button></div>`); }
+        function addAtackField(ml='', sec='') { document.getElementById('ataques-container').insertAdjacentHTML('beforeend', `<div class="flex gap-2 atk-row items-center bg-zinc-900 p-2 rounded-lg mt-1"><input type="number" class="flex-1 atk-ml" value="${ml}"><input type="number" class="flex-1 atk-sec" value="${sec}"><button onclick="this.closest('.atk-row').remove()" class="text-zinc-600 font-bold px-2">X</button></div>`); }
         function handleFocus(el) { if(el.value === "--") el.value = ""; el.select(); }
         function fecharDetalhes() { document.getElementById('modal-detalhes').classList.add('hidden'); }
-        function abrirDetalhes(id) { const i = localData.g.find(x => x.id === id); document.getElementById('detalhes-content').innerHTML = `<div><span class="label-gold">Produtor</span><p class="text-white font-bold italic">${i.prod||'--'}</p></div><div><span class="label-gold">Variedade</span><p class="text-white font-bold italic">${i.variedade||'--'}</p></div><div><span class="label-gold">Notas</span><p class="text-zinc-400 italic text-sm leading-tight">"${i.notas||'--'}"</p></div>`; document.getElementById('modal-detalhes').classList.remove('hidden'); }
+        function abrirDetalhes(id) { 
+            const i = localData.g.find(x => x.id === id); 
+            document.getElementById('detalhes-content').innerHTML = `<div><span class="label-gold">PRODUTOR</span><p class="text-white font-bold italic">${i.prod||'--'}</p></div><div><span class="label-gold">VARIEDADE | PROCESSO | ALTITUDE</span><p class="text-white font-bold italic">${i.variedade||'--'} | ${i.processo||'--'} | ${i.altitude||'--'}</p></div><div><span class="label-gold">NOTAS</span><p class="text-zinc-400 italic text-sm leading-tight">"${i.notas||'--'}"</p></div>`; 
+            document.getElementById('modal-detalhes').classList.remove('hidden'); 
+        }
+        async function loadDiario() { const snap = await db.collection('logs').where('owner_uid', '==', currentUser.uid).orderBy('ts', 'desc').get(); let h = ''; snap.forEach(d => { const i = d.data(); h += `<div class="card p-4 border-l-4 border-l-amber-600 shadow-none"><div class="text-[10px] text-zinc-500 font-bold">${i.data}</div><div class="text-lg font-black italic text-white leading-tight mt-1">${i.grao}</div><div class="text-xs font-bold text-amber-500 uppercase mt-1">${i.receita} | ${i.tempoTotal}</div><div class="mt-3 flex justify-between items-center"><div class="text-xl text-amber-500">${'★'.repeat(i.nota)}${'☆'.repeat(5-i.nota)}</div><button onclick='del("logs","${d.id}","Diário")' class="text-xs p-2 bg-zinc-900 rounded-lg text-red-800 uppercase font-black">🗑️</button></div></div>`; }); document.getElementById('list-logs').innerHTML = h; }
+        function filterList(tab) { if(tab==='g') loadG(); if(tab==='r') loadR(); }
         function handleLogout() { auth.signOut(); }
         function toggleAuth(l) { document.getElementById('login-form').classList.toggle('hidden', !l); document.getElementById('signup-form').classList.toggle('hidden', l); }
         async function handleLogin() { try { await auth.signInWithEmailAndPassword(document.getElementById('login-email').value, document.getElementById('login-pass').value); } catch(e) { alert(e.message); } }
@@ -311,21 +357,6 @@
         function openPix(){ document.getElementById('pix-modal').classList.remove('hidden'); if(!document.querySelector("#pix-qrcode img")) new QRCode(document.getElementById("pix-qrcode"), {text: "00020101021126480014br.gov.bcb.pix0119alanpocos@gmail.com5204000053039865802BR5930ALAN DOUGLAS PEREIRA RODRIGUES6005POCOS6304", width: 150, height: 150}); }
         function closePix(){ document.getElementById('pix-modal').classList.add('hidden'); }
         function copyPix(){ navigator.clipboard.writeText("alanpocos@gmail.com"); alert('Pix copiado!'); }
-
-        // FEEDBACK
-        function abrirFeedback() { if(timer){ clearInterval(timer); timer = null; } document.getElementById('modal-feedback').classList.remove('hidden'); }
-        function fecharFeedback() { document.getElementById('modal-feedback').classList.add('hidden'); seg=0; document.getElementById('timer').innerText="00:00"; upCalc(); }
-        async function salvarFeedback() { 
-            const g = document.getElementById('p-g'), r = document.getElementById('p-r'); if(g.value=="0"||r.value=="0") return alert("Selecione tudo!");
-            await db.collection('logs').add({ grao: g.options[g.selectedIndex].text, receita: r.options[r.selectedIndex].text, tempoTotal: document.getElementById('timer').innerText, nota: notaSelecionada, observacoes: document.getElementById('f-obs').value.toUpperCase(), docura: document.getElementById('f-doce').value, acidez: document.getElementById('f-acidez').value, amargor: document.getElementById('f-amargor').value, corpo: document.getElementById('f-corpo').value, data: new Date().toLocaleString(), ts: firebase.firestore.FieldValue.serverTimestamp(), owner_uid: currentUser.uid });
-            fecharFeedback(); showTab('diario');
-        }
-        async function loadDiario() {
-            const snap = await db.collection('logs').where('owner_uid', '==', currentUser.uid).orderBy('ts', 'desc').get();
-            let h = ''; snap.forEach(d => { const i = d.data(); h += `<div class="card p-4 border-l-4 border-l-amber-600 shadow-none"><div class="text-[10px] text-zinc-500 font-bold">${i.data}</div><div class="text-lg font-black italic text-white leading-tight mt-1">${i.grao}</div><div class="text-xs font-bold text-amber-500 uppercase mt-1">${i.receita} | ${i.tempoTotal}</div><div class="mt-3 flex justify-between items-center"><div class="text-xl text-amber-500">${'★'.repeat(i.nota)}${'☆'.repeat(5-i.nota)}</div><button onclick='del("logs","${d.id}","Diário")' class="text-xs p-2 bg-zinc-900 rounded-lg text-red-800 uppercase font-black">🗑️</button></div></div>`; });
-            document.getElementById('list-logs').innerHTML = h;
-        }
-        function filterList(tab) { const q = document.getElementById('search-'+tab).value.toLowerCase(); if(tab==='g') loadG(); if(tab==='r') loadR(); }
     </script>
 </body>
 </html>
